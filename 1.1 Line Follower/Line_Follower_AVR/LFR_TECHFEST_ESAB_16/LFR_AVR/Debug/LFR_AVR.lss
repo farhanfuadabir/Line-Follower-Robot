@@ -1,0 +1,383 @@
+
+LFR_AVR.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002c8  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000002  00800060  000002c8  0000035c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          0000000a  00800062  00800062  0000035e  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  0000035e  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000390  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000190  00000000  00000000  000003cc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00001382  00000000  00000000  0000055c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000056b  00000000  00000000  000018de  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000960  00000000  00000000  00001e49  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000003a4  00000000  00000000  000027ac  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000678  00000000  00000000  00002b50  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000008ab  00000000  00000000  000031c8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000170  00000000  00000000  00003a73  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 a7 00 	jmp	0x14e	; 0x14e <__vector_1>
+   8:	0c 94 da 00 	jmp	0x1b4	; 0x1b4 <__vector_2>
+   c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  10:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  14:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  18:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  2c:	0c 94 25 01 	jmp	0x24a	; 0x24a <__vector_11>
+  30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  3c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  40:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  44:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  50:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e8 ec       	ldi	r30, 0xC8	; 200
+  68:	f2 e0       	ldi	r31, 0x02	; 2
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	a2 36       	cpi	r26, 0x62	; 98
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+
+00000076 <__do_clear_bss>:
+  76:	20 e0       	ldi	r18, 0x00	; 0
+  78:	a2 e6       	ldi	r26, 0x62	; 98
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	ac 36       	cpi	r26, 0x6C	; 108
+  82:	b2 07       	cpc	r27, r18
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0e 94 73 00 	call	0xe6	; 0xe6 <main>
+  8a:	0c 94 62 01 	jmp	0x2c4	; 0x2c4 <_exit>
+
+0000008e <__bad_interrupt>:
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000092 <adc_init>:
+  92:	3e 9a       	sbi	0x07, 6	; 7
+  94:	37 9a       	sbi	0x06, 7	; 6
+  96:	86 b1       	in	r24, 0x06	; 6
+  98:	87 60       	ori	r24, 0x07	; 7
+  9a:	86 b9       	out	0x06, r24	; 6
+  9c:	08 95       	ret
+
+0000009e <setRotationForward>:
+
+	prev_mappedValue = mappedValue;
+	if (sensorValue == 0b00000000) mappedValue = prev_mappedValue;
+	else if (sensorValue == 0b11111111) mappedValue = 0;
+	
+	else if ((sensorValue == 0b00011001) || (sensorValue == 0b00001001) || (sensorValue == 0b00010001) || (sensorValue == 0b00110001) || (sensorValue == 0b01110001) || (sensorValue == 0b01100001) || (sensorValue == 0b01100011)) mappedValue = 120;
+  9e:	80 e0       	ldi	r24, 0x00	; 0
+  a0:	90 e0       	ldi	r25, 0x00	; 0
+  a2:	0e 94 50 01 	call	0x2a0	; 0x2a0 <PWM0>
+  a6:	80 e0       	ldi	r24, 0x00	; 0
+  a8:	90 e0       	ldi	r25, 0x00	; 0
+  aa:	0e 94 52 01 	call	0x2a4	; 0x2a4 <PWM2>
+	else if ((sensorValue == 0b00001011) || (sensorValue == 0b00010011) || (sensorValue == 0b00011011) || (sensorValue == 0b00001010) || (sensorValue == 0b00010010) || (sensorValue == 0b01110111) || (sensorValue == 0b01110011) || (sensorValue == 0b00110111) || (sensorValue == 0b00011101) || (sensorValue == 0b01100111) || (sensorValue == 0b00001101) || (sensorValue == 0b00111001) || (sensorValue == 0b00110011)) mappedValue = 120;
+  ae:	af 9a       	sbi	0x15, 7	; 21
+  b0:	ae 98       	cbi	0x15, 6	; 21
+  b2:	ad 9a       	sbi	0x15, 5	; 21
+  b4:	ac 98       	cbi	0x15, 4	; 21
+  b6:	08 95       	ret
+
+000000b8 <Forward>:
+  b8:	80 e0       	ldi	r24, 0x00	; 0
+  ba:	90 e0       	ldi	r25, 0x00	; 0
+  bc:	0e 94 50 01 	call	0x2a0	; 0x2a0 <PWM0>
+  c0:	80 e0       	ldi	r24, 0x00	; 0
+  c2:	90 e0       	ldi	r25, 0x00	; 0
+  c4:	0e 94 52 01 	call	0x2a4	; 0x2a4 <PWM2>
+  c8:	af 9a       	sbi	0x15, 7	; 21
+  ca:	ae 98       	cbi	0x15, 6	; 21
+  cc:	ad 9a       	sbi	0x15, 5	; 21
+  ce:	ac 98       	cbi	0x15, 4	; 21
+  d0:	80 91 60 00 	lds	r24, 0x0060
+  d4:	90 e0       	ldi	r25, 0x00	; 0
+  d6:	0e 94 50 01 	call	0x2a0	; 0x2a0 <PWM0>
+  da:	80 91 60 00 	lds	r24, 0x0060
+  de:	90 e0       	ldi	r25, 0x00	; 0
+  e0:	0e 94 52 01 	call	0x2a4	; 0x2a4 <PWM2>
+  e4:	08 95       	ret
+
+000000e6 <main>:
+  e6:	8c 9a       	sbi	0x11, 4	; 17
+  e8:	8d 9a       	sbi	0x11, 5	; 17
+  ea:	8b 98       	cbi	0x11, 3	; 17
+  ec:	8a 98       	cbi	0x11, 2	; 17
+  ee:	a7 9a       	sbi	0x14, 7	; 20
+  f0:	a6 9a       	sbi	0x14, 6	; 20
+  f2:	a5 9a       	sbi	0x14, 5	; 20
+  f4:	a4 9a       	sbi	0x14, 4	; 20
+  f6:	8f 9a       	sbi	0x11, 7	; 17
+  f8:	bb 9a       	sbi	0x17, 3	; 23
+  fa:	0e 94 49 00 	call	0x92	; 0x92 <adc_init>
+  fe:	0e 94 54 01 	call	0x2a8	; 0x2a8 <UART_init>
+ 102:	0e 94 3c 01 	call	0x278	; 0x278 <PWM0_init>
+ 106:	0e 94 46 01 	call	0x28c	; 0x28c <PWM2_init>
+ 10a:	0e 94 4f 00 	call	0x9e	; 0x9e <setRotationForward>
+ 10e:	0e 94 5c 00 	call	0xb8	; 0xb8 <Forward>
+ 112:	80 91 60 00 	lds	r24, 0x0060
+ 116:	90 e0       	ldi	r25, 0x00	; 0
+ 118:	0e 94 50 01 	call	0x2a0	; 0x2a0 <PWM0>
+ 11c:	80 91 60 00 	lds	r24, 0x0060
+ 120:	90 e0       	ldi	r25, 0x00	; 0
+ 122:	0e 94 52 01 	call	0x2a4	; 0x2a4 <PWM2>
+ 126:	0e 94 5c 00 	call	0xb8	; 0xb8 <Forward>
+ 12a:	8f ef       	ldi	r24, 0xFF	; 255
+ 12c:	90 e0       	ldi	r25, 0x00	; 0
+ 12e:	0e 94 50 01 	call	0x2a0	; 0x2a0 <PWM0>
+ 132:	8f ef       	ldi	r24, 0xFF	; 255
+ 134:	90 e0       	ldi	r25, 0x00	; 0
+ 136:	0e 94 52 01 	call	0x2a4	; 0x2a4 <PWM2>
+ 13a:	2f ef       	ldi	r18, 0xFF	; 255
+ 13c:	89 e6       	ldi	r24, 0x69	; 105
+ 13e:	98 e1       	ldi	r25, 0x18	; 24
+ 140:	21 50       	subi	r18, 0x01	; 1
+ 142:	80 40       	sbci	r24, 0x00	; 0
+ 144:	90 40       	sbci	r25, 0x00	; 0
+ 146:	e1 f7       	brne	.-8      	; 0x140 <main+0x5a>
+ 148:	00 c0       	rjmp	.+0      	; 0x14a <main+0x64>
+ 14a:	00 00       	nop
+ 14c:	ff cf       	rjmp	.-2      	; 0x14c <main+0x66>
+
+0000014e <__vector_1>:
+ 14e:	1f 92       	push	r1
+ 150:	0f 92       	push	r0
+ 152:	0f b6       	in	r0, 0x3f	; 63
+ 154:	0f 92       	push	r0
+ 156:	11 24       	eor	r1, r1
+ 158:	8f 93       	push	r24
+ 15a:	9f 93       	push	r25
+ 15c:	80 91 68 00 	lds	r24, 0x0068
+ 160:	90 91 69 00 	lds	r25, 0x0069
+	else if ((sensorValue == 0b00000111) || (sensorValue == 0b00001111) || (sensorValue == 0b00011111 || sensorValue == 0b00111111)) mappedValue = 125;
+ 164:	89 2b       	or	r24, r25
+ 166:	51 f4       	brne	.+20     	; 0x17c <__vector_1+0x2e>
+ 168:	8e b5       	in	r24, 0x2e	; 46
+ 16a:	82 60       	ori	r24, 0x02	; 2
+ 16c:	8e bd       	out	0x2e, r24	; 46
+ 16e:	81 e0       	ldi	r24, 0x01	; 1
+ 170:	90 e0       	ldi	r25, 0x00	; 0
+ 172:	90 93 69 00 	sts	0x0069, r25
+ 176:	80 93 68 00 	sts	0x0068, r24
+ 17a:	15 c0       	rjmp	.+42     	; 0x1a6 <__vector_1+0x58>
+ 17c:	80 91 68 00 	lds	r24, 0x0068
+ 180:	90 91 69 00 	lds	r25, 0x0069
+ 184:	01 97       	sbiw	r24, 0x01	; 1
+ 186:	79 f4       	brne	.+30     	; 0x1a6 <__vector_1+0x58>
+ 188:	1e bc       	out	0x2e, r1	; 46
+ 18a:	8c b5       	in	r24, 0x2c	; 44
+ 18c:	9d b5       	in	r25, 0x2d	; 45
+ 18e:	96 95       	lsr	r25
+ 190:	87 95       	ror	r24
+ 192:	90 93 6b 00 	sts	0x006B, r25
+ 196:	80 93 6a 00 	sts	0x006A, r24
+ 19a:	1d bc       	out	0x2d, r1	; 45
+ 19c:	1c bc       	out	0x2c, r1	; 44
+ 19e:	10 92 69 00 	sts	0x0069, r1
+	else if (sensorValue == 0b00000001) mappedValue = 70;
+ 1a2:	10 92 68 00 	sts	0x0068, r1
+ 1a6:	9f 91       	pop	r25
+ 1a8:	8f 91       	pop	r24
+ 1aa:	0f 90       	pop	r0
+ 1ac:	0f be       	out	0x3f, r0	; 63
+ 1ae:	0f 90       	pop	r0
+ 1b0:	1f 90       	pop	r1
+ 1b2:	18 95       	reti
+
+000001b4 <__vector_2>:
+ 1b4:	1f 92       	push	r1
+ 1b6:	0f 92       	push	r0
+ 1b8:	0f b6       	in	r0, 0x3f	; 63
+ 1ba:	0f 92       	push	r0
+	else if (sensorValue == 0b00000011) mappedValue = 60;
+ 1bc:	11 24       	eor	r1, r1
+ 1be:	2f 93       	push	r18
+ 1c0:	3f 93       	push	r19
+ 1c2:	4f 93       	push	r20
+ 1c4:	5f 93       	push	r21
+ 1c6:	8f 93       	push	r24
+ 1c8:	9f 93       	push	r25
+ 1ca:	80 91 64 00 	lds	r24, 0x0064
+ 1ce:	90 91 65 00 	lds	r25, 0x0065
+ 1d2:	89 2b       	or	r24, r25
+ 1d4:	51 f4       	brne	.+20     	; 0x1ea <__vector_2+0x36>
+	else if (sensorValue == 0b00000010 || sensorValue == 0b11111101) mappedValue = 30;
+ 1d6:	83 b7       	in	r24, 0x33	; 51
+ 1d8:	83 60       	ori	r24, 0x03	; 3
+ 1da:	83 bf       	out	0x33, r24	; 51
+ 1dc:	81 e0       	ldi	r24, 0x01	; 1
+ 1de:	90 e0       	ldi	r25, 0x00	; 0
+ 1e0:	90 93 65 00 	sts	0x0065, r25
+ 1e4:	80 93 64 00 	sts	0x0064, r24
+ 1e8:	25 c0       	rjmp	.+74     	; 0x234 <__vector_2+0x80>
+ 1ea:	80 91 64 00 	lds	r24, 0x0064
+ 1ee:	90 91 65 00 	lds	r25, 0x0065
+ 1f2:	01 97       	sbiw	r24, 0x01	; 1
+ 1f4:	f9 f4       	brne	.+62     	; 0x234 <__vector_2+0x80>
+ 1f6:	13 be       	out	0x33, r1	; 51
+ 1f8:	22 b7       	in	r18, 0x32	; 50
+ 1fa:	40 91 62 00 	lds	r20, 0x0062
+	else if (sensorValue == 0b00000110 || sensorValue == 0b11111001) mappedValue = 20;
+ 1fe:	50 91 63 00 	lds	r21, 0x0063
+ 202:	3f ef       	ldi	r19, 0xFF	; 255
+ 204:	34 9f       	mul	r19, r20
+ 206:	c0 01       	movw	r24, r0
+ 208:	35 9f       	mul	r19, r21
+ 20a:	90 0d       	add	r25, r0
+ 20c:	11 24       	eor	r1, r1
+ 20e:	82 0f       	add	r24, r18
+ 210:	91 1d       	adc	r25, r1
+ 212:	88 0f       	add	r24, r24
+ 214:	99 1f       	adc	r25, r25
+ 216:	88 0f       	add	r24, r24
+ 218:	99 1f       	adc	r25, r25
+ 21a:	90 93 67 00 	sts	0x0067, r25
+ 21e:	80 93 66 00 	sts	0x0066, r24
+ 222:	10 92 63 00 	sts	0x0063, r1
+	else if (sensorValue == 0b00000100 || sensorValue == 0b00001110) mappedValue = 15;
+ 226:	10 92 62 00 	sts	0x0062, r1
+ 22a:	12 be       	out	0x32, r1	; 50
+ 22c:	10 92 65 00 	sts	0x0065, r1
+ 230:	10 92 64 00 	sts	0x0064, r1
+ 234:	9f 91       	pop	r25
+ 236:	8f 91       	pop	r24
+ 238:	5f 91       	pop	r21
+ 23a:	4f 91       	pop	r20
+ 23c:	3f 91       	pop	r19
+ 23e:	2f 91       	pop	r18
+ 240:	0f 90       	pop	r0
+ 242:	0f be       	out	0x3f, r0	; 63
+ 244:	0f 90       	pop	r0
+ 246:	1f 90       	pop	r1
+ 248:	18 95       	reti
+
+0000024a <__vector_11>:
+ 24a:	1f 92       	push	r1
+	else if (sensorValue == 0b11111011)
+ 24c:	0f 92       	push	r0
+ 24e:	0f b6       	in	r0, 0x3f	; 63
+ 250:	0f 92       	push	r0
+ 252:	11 24       	eor	r1, r1
+ 254:	8f 93       	push	r24
+ 256:	9f 93       	push	r25
+ 258:	80 91 62 00 	lds	r24, 0x0062
+	{
+		mappedValue = 15;
+ 25c:	90 91 63 00 	lds	r25, 0x0063
+ 260:	01 96       	adiw	r24, 0x01	; 1
+ 262:	90 93 63 00 	sts	0x0063, r25
+		if (reverseFlag == 0)
+ 266:	80 93 62 00 	sts	0x0062, r24
+ 26a:	9f 91       	pop	r25
+ 26c:	8f 91       	pop	r24
+		{
+			inverseLevel++;
+ 26e:	0f 90       	pop	r0
+ 270:	0f be       	out	0x3f, r0	; 63
+ 272:	0f 90       	pop	r0
+ 274:	1f 90       	pop	r1
+ 276:	18 95       	reti
+
+00000278 <PWM0_init>:
+ 278:	83 b7       	in	r24, 0x33	; 51
+ 27a:	88 64       	ori	r24, 0x48	; 72
+ 27c:	83 bf       	out	0x33, r24	; 51
+ 27e:	83 b7       	in	r24, 0x33	; 51
+ 280:	80 62       	ori	r24, 0x20	; 32
+ 282:	83 bf       	out	0x33, r24	; 51
+ 284:	83 b7       	in	r24, 0x33	; 51
+ 286:	81 60       	ori	r24, 0x01	; 1
+ 288:	83 bf       	out	0x33, r24	; 51
+ 28a:	08 95       	ret
+
+0000028c <PWM2_init>:
+ 28c:	85 b5       	in	r24, 0x25	; 37
+ 28e:	88 64       	ori	r24, 0x48	; 72
+ 290:	85 bd       	out	0x25, r24	; 37
+ 292:	85 b5       	in	r24, 0x25	; 37
+ 294:	80 62       	ori	r24, 0x20	; 32
+ 296:	85 bd       	out	0x25, r24	; 37
+ 298:	85 b5       	in	r24, 0x25	; 37
+ 29a:	81 60       	ori	r24, 0x01	; 1
+ 29c:	85 bd       	out	0x25, r24	; 37
+ 29e:	08 95       	ret
+
+000002a0 <PWM0>:
+ 2a0:	8c bf       	out	0x3c, r24	; 60
+ 2a2:	08 95       	ret
+
+000002a4 <PWM2>:
+ 2a4:	83 bd       	out	0x23, r24	; 35
+ 2a6:	08 95       	ret
+
+000002a8 <UART_init>:
+ 2a8:	80 b5       	in	r24, 0x20	; 32
+ 2aa:	8f 7b       	andi	r24, 0xBF	; 191
+ 2ac:	80 bd       	out	0x20, r24	; 32
+ 2ae:	59 98       	cbi	0x0b, 1	; 11
+ 2b0:	10 bc       	out	0x20, r1	; 32
+ 2b2:	87 e6       	ldi	r24, 0x67	; 103
+ 2b4:	89 b9       	out	0x09, r24	; 9
+ 2b6:	8a b1       	in	r24, 0x0a	; 10
+ 2b8:	88 61       	ori	r24, 0x18	; 24
+ 2ba:	8a b9       	out	0x0a, r24	; 10
+ 2bc:	80 b5       	in	r24, 0x20	; 32
+ 2be:	8e 68       	ori	r24, 0x8E	; 142
+ 2c0:	80 bd       	out	0x20, r24	; 32
+ 2c2:	08 95       	ret
+
+000002c4 <_exit>:
+		if (reverseFlag == 0)
+		{
+			inverseLevel++;
+		}
+	}
+	else if (sensorValue == 0b00001000 || sensorValue == 0b00011100) mappedValue = 5;
+ 2c4:	f8 94       	cli
+
+000002c6 <__stop_program>:
+ 2c6:	ff cf       	rjmp	.-2      	; 0x2c6 <__stop_program>
