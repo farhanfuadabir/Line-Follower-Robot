@@ -9,56 +9,59 @@ IUB Makers' Mania
 
 /*          MOTOR PINS          */
 
-#define rightMotorA 8
-#define rightMotorB 9
-#define leftMotorA 7
-#define leftMotorB 6
-#define rightMotor_power  10
-#define leftMotor_power 5
+#define rightMotorA 6
+#define rightMotorB 5
+#define leftMotorA 4
+#define leftMotorB 3
+#define rightMotor_power  7
+#define leftMotor_power 2
 
 /*          PID CONSTANT VALUES         */
 
-#define kp 60
-#define kd 250
+#define kp 64
+#define kd 120
 #define ki 0
 
-#define setPoint 5
+#define setPoint 7
 
 
 /*          GLOBAL VARIABLES INITIALIZATION            */
 
-
-int i = 0, sum = 0, avg = 0;
+int sum = 0, avg = 0;
+boolean rightSensor = 0, leftSensor = 0;
 int error = 0, prev_error = 0;
-int motor_res = 0, lmSpeed = 150, rmSpeed = 150, maxSpeed = 220, reverseSpeed = 0;
+int motorResponse = 0, lmSpeed = 150, rmSpeed = 150, maxSpeed = 230, reverseSpeed = 0;
 int correct = 0;
-int rightFlag = 0, leftFlag = 0, allFlag = 0;
 int timer = 0;
 int count = 0;
 
+
+int threshold[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+int maxValue[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+int minValue[8] = {1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023};
 
 
 /*          BASIC MOVEMENT FUNCTIONS            */
 
 
-void forward()
+void forward(uint8_t speed)
 {
-  digitalWrite(rightMotorA , HIGH);
-  digitalWrite(rightMotorB , LOW);
-  digitalWrite(leftMotorA , HIGH);
-  digitalWrite(leftMotorB , LOW);
-  analogWrite(rightMotor_power , maxSpeed);
-  analogWrite(leftMotor_power , maxSpeed);
+  digitalWrite(rightMotorA, HIGH);
+  digitalWrite(rightMotorB, LOW);
+  digitalWrite(leftMotorA, HIGH);
+  digitalWrite(leftMotorB, LOW);
+  analogWrite(rightMotor_power, speed);
+  analogWrite(leftMotor_power, speed);
 }
 
-void backward()
+void backward(uint8_t speed)
 {
-  digitalWrite(rightMotorB , HIGH);
-  digitalWrite(rightMotorA , LOW);
-  digitalWrite(leftMotorB , HIGH);
-  digitalWrite(leftMotorA , LOW);
-  analogWrite(rightMotor_power , maxSpeed);
-  analogWrite(leftMotor_power , maxSpeed);
+  digitalWrite(rightMotorB, HIGH);
+  digitalWrite(rightMotorA, LOW);
+  digitalWrite(leftMotorB, HIGH);
+  digitalWrite(leftMotorA, LOW);
+  analogWrite(rightMotor_power, speed);
+  analogWrite(leftMotor_power, speed);
 }
 
 void halt()
@@ -67,61 +70,67 @@ void halt()
   digitalWrite(rightMotorB , LOW);
   digitalWrite(leftMotorA , LOW);
   digitalWrite(leftMotorB , LOW);
-  analogWrite(rightMotor_power , 0);
-  analogWrite(leftMotor_power , 0);
+  analogWrite(rightMotor_power, 0);
+  analogWrite(leftMotor_power, 0);
 }
 
 void setRotationForward()
 {
-  digitalWrite(rightMotorA , HIGH);
-  digitalWrite(rightMotorB , LOW);
-  digitalWrite(leftMotorA , HIGH);
-  digitalWrite(leftMotorB , LOW);
+  digitalWrite(rightMotorA, HIGH);
+  digitalWrite(rightMotorB, LOW);
+  digitalWrite(leftMotorA, HIGH);
+  digitalWrite(leftMotorB, LOW);
 }
 
-void leftSharp()
+void leftSharp(uint8_t speed)
 {
-  digitalWrite(rightMotorA , HIGH);
-  digitalWrite(rightMotorB , LOW);
-  digitalWrite(leftMotorA , LOW);
-  digitalWrite(leftMotorB , HIGH);
-  analogWrite(rightMotor_power , 80);
-  analogWrite(leftMotor_power , 80);
+  digitalWrite(rightMotorA, HIGH);
+  digitalWrite(rightMotorB, LOW);
+  digitalWrite(leftMotorA, LOW);
+  digitalWrite(leftMotorB, HIGH);
+  analogWrite(rightMotor_power, speed);
+  analogWrite(leftMotor_power, speed);
 }
 
 
 void setRotationLeftSharp()
 {
-  digitalWrite(rightMotorA , HIGH);
-  digitalWrite(rightMotorB , LOW);
+  digitalWrite(rightMotorA, HIGH);
+  digitalWrite(rightMotorB, LOW);
   digitalWrite(leftMotorA , LOW);
   digitalWrite(leftMotorB , HIGH);
 }
 
-void rightSharp()
+void rightSharp(uint8_t speed)
 {
-  digitalWrite(rightMotorB , HIGH);
-  digitalWrite(rightMotorA , LOW);
-  digitalWrite(leftMotorB , LOW);
-  digitalWrite(leftMotorA , HIGH);
-  analogWrite(rightMotor_power , 80);
-  analogWrite(leftMotor_power , 80);
+  digitalWrite(rightMotorB, HIGH);
+  digitalWrite(rightMotorA, LOW);
+  digitalWrite(leftMotorB, LOW);
+  digitalWrite(leftMotorA, HIGH);
+  analogWrite(rightMotor_power, speed);
+  analogWrite(leftMotor_power, speed);
 }
 
 void setRotationRightSharp()
 {
-  digitalWrite(rightMotorB , HIGH);
-  digitalWrite(rightMotorA , LOW);
-  digitalWrite(leftMotorB , LOW);
-  digitalWrite(leftMotorA , HIGH);
+  digitalWrite(rightMotorB, HIGH);
+  digitalWrite(rightMotorA, LOW);
+  digitalWrite(leftMotorB, LOW);
+  digitalWrite(leftMotorA, HIGH);
 }
 
-void ajairaSensor()
+
+
+/*               Sensor Functions                */
+
+
+
+void sensorValuePrint()
 {
-//  Serial.print(avg);
-//  Serial.print("\t");
+  Serial.print(avg);
+  Serial.print("\t");
 //  Serial.print(error);
-//  Serial.print("\t");
+  Serial.print("\t");
   Serial.print(analogRead(A0));
   Serial.print('\t'); 
   Serial.print(analogRead(A1));
@@ -132,65 +141,121 @@ void ajairaSensor()
   Serial.print('\t');
   Serial.print(analogRead(A4));
   Serial.print('\t');
-  Serial.println(analogRead(A5));
+  Serial.print(analogRead(A5));
+  Serial.print('\t');
+  Serial.print(analogRead(A6));
+  Serial.print('\t');
+  Serial.println(analogRead(A7));
   //delay(10);
 }
 
-void sensing()
-{
-  leftFlag = 0;
-  rightFlag = 0;
 
+void sensorRead()
+{ 
+  leftSensor = 0;
+  rightSensor = 0;
   count = 0;
-  for(i = 0 ; i < 6 ; i++)
+  sum = 0;
+
+  for(uint8_t i = 0 ; i < 8 ; i++)
   {
-      if(analogRead(i) < 800)
-      { 
-      count++;
-      sum += i * 2;
-      if(i == 0) leftFlag = 1;
-      else if(i == 5) rightFlag = 1;
-      }   
+    if(analogRead(i) < threshold[i])
+    {
+      if(i == 0) rightSensor = 1;
+      else if(i == 7) leftSensor = 1; 
+      else
+      {
+        count++;
+        sum += i * 2;
+      }
+    }   
   }
   avg = sum / count;
-  sum = 0;
+}
+
+// void sensorRead()
+// { 
+//   leftSensor = 0;
+//   rightSensor = 0;
+//   count = 0;
+//   sum = 0;
+//   int temp = 0;
+
+//   for(uint8_t i = 0 ; i < 8 ; i++)
+//   {
+//     temp = analogRead(i);
+//     if(temp > maxValue[i]) temp = 10;
+//     else if(temp < minValue[i]) temp = 0;
+//     //else temp = (temp - minValue[i])*10;
+//     else temp = ((temp - minValue[i]) * 10) / (maxValue[i] - minValue[i]);
+//     Serial.print(temp);
+//     Serial.print('\t');
+//   }
+//   Serial.print('\n');
+// }
+
+void autoCalibration(uint16_t calibrationTime, uint8_t percent)
+{
+  rightSharp(150);
+  uint16_t startTime = millis();
+  while(millis() - startTime <= calibrationTime)
+  {
+    for(uint8_t i = 0 ; i < 8 ; i++)
+    {
+      uint16_t temp = analogRead(i);
+      if(temp > maxValue[i]) maxValue[i] = temp;
+      else if(temp < minValue[i]) minValue[i] = temp;
+    }
+  }
+  for(uint8_t i = 0 ; i < 8 ; i++) threshold[i] = ((maxValue[i] - minValue[i]) * percent / 100) + minValue[i];
+  
+  while(avg != (setPoint - 2)) sensorRead();
+  leftSharp(200);
+  delay(50);
+  halt();
+
+  // for(uint8_t i = 0 ; i < 8 ; i++) 
+  // {
+  //   Serial.print(threshold[i]);
+  //   Serial.print('\t');
+  // }  
 }
 
 
 void pid(void)
 {
-    error = avg - setPoint;    
-    motor_res = kp*error + kd*(error - prev_error);
+    error = setPoint - avg;    
+    motorResponse = kp*error + kd*(error - prev_error);
     prev_error = error;
 //    Serial.print(avg);
 //    Serial.print('\t');
 //    Serial.print(error);
 //    Serial.print('\t');
-//    Serial.print(motor_res);
+//    Serial.print(motorResponse);
 //    Serial.print('\t');
-//    if (motor_res >= 0)
+//    if (motorResponse >= 0)
 //    {
 //        lmSpeed = maxSpeed;
-//        rmSpeed = maxSpeed - motor_res;
+//        rmSpeed = maxSpeed - motorResponse;
 //    }
-//    else if (motor_res < 0)
+//    else if (motorResponse < 0)
 //    {
 //        rmSpeed = maxSpeed;
-//        lmSpeed = maxSpeed + motor_res;
+//        lmSpeed = maxSpeed + motorResponse;
 //    }
 
-//    lmSpeed = maxSpeed + motor_res;
-//    rmSpeed = maxSpeed - motor_res;
+//    lmSpeed = maxSpeed + motorResponse;
+//    rmSpeed = maxSpeed - motorResponse;
 //    if(rmSpeed > maxSpeed)  rmSpeed = maxSpeed;
 //    if(lmSpeed > maxSpeed)  lmSpeed = maxSpeed;
 //    if(rmSpeed < 0) rmSpeed = 0;
 //    if(lmSpeed < 0) lmSpeed = 0;  
 
-    if(motor_res > maxSpeed)
+  if(motorResponse > maxSpeed)
   {
-    reverseSpeed = (motor_res - maxSpeed);
+    reverseSpeed = (motorResponse - maxSpeed);
     if (reverseSpeed > maxSpeed) reverseSpeed = maxSpeed;
-    motor_res = maxSpeed;
+    motorResponse = maxSpeed;
     
     setRotationRightSharp();
     
@@ -198,11 +263,11 @@ void pid(void)
     lmSpeed = maxSpeed;
   }
   
-  else if(motor_res < -maxSpeed)
+  else if(motorResponse < -maxSpeed)
   {
-    reverseSpeed = (-motor_res - maxSpeed);
+    reverseSpeed = (-motorResponse - maxSpeed);
     if (reverseSpeed > maxSpeed) reverseSpeed = maxSpeed;
-    motor_res = -maxSpeed;
+    motorResponse = -maxSpeed;
     
     setRotationLeftSharp();
     
@@ -212,20 +277,20 @@ void pid(void)
   
 
 
-  else if(motor_res >= 0 && motor_res < maxSpeed)
+  else if(motorResponse >= 0 && motorResponse < maxSpeed)
   {
     setRotationForward();
     
-    rmSpeed = maxSpeed - motor_res;
+    rmSpeed = maxSpeed - motorResponse;
     lmSpeed = maxSpeed;   
   }
 
-  else if(motor_res < 0 && motor_res > -maxSpeed)
+  else if(motorResponse < 0 && motorResponse > -maxSpeed)
   {
     setRotationForward();
     
     rmSpeed = maxSpeed;
-    lmSpeed = maxSpeed + motor_res;
+    lmSpeed = maxSpeed + motorResponse;
   }
     
 //    Serial.print(lmSpeed);
@@ -243,111 +308,115 @@ void setup() {
   pinMode(leftMotorB , OUTPUT);
   pinMode(rightMotor_power , OUTPUT);
   pinMode(leftMotor_power , OUTPUT);
+  
   Serial.begin(9600);
-  forward();
+  
+  //forward();
+  autoCalibration(2000, 50);  
 }
 
 
 void loop() {
+  sensorRead();
+//  sensorValuePrint();
 
 //forward();
-//delay(1000);
-//rightSharp();
-//delay(1000);
-//leftSharp();
-//delay(1000);
+// delay(1000);
+// rightSharp();
+// delay(1000);
+// leftSharp();
+// delay(1000);
 
-  sensing();
+//   sensorRead();
   
-  if(prev_error < 2 && prev_error > -2 && rightFlag == 1 && count < 6)
-  {
-    forward();
-    timer = millis();
-    while ((millis() - timer) < 3000)
-    {
-      sensing();
-      if(count == 6 || count == 0) break;
-      rightFlag = 0;
-      leftFlag = 0;
-    }
+//   if(prev_error < 2 && prev_error > -2 && rightFlag == 1 && count < 6)
+//   {
+//     forward();
+//     timer = millis();
+//     while ((millis() - timer) < 3000)
+//     {
+//       sensorRead();
+//       if(count == 6 || count == 0) break;
+//       rightFlag = 0;
+//       leftFlag = 0;
+//     }
     
-    if (count == 0)
-    {
-      rightSharp();
-    }
-    while ((millis() - timer) < 1000)
-    {
-      sensing();
-      if(avg != -1)
-      {
-          pid();
-          analogWrite(rightMotor_power , rmSpeed);
-          analogWrite(leftMotor_power , lmSpeed);
-      }
-    }
+//     if (count == 0)
+//     {
+//       rightSharp();
+//     }
+//     while ((millis() - timer) < 1000)
+//     {
+//       sensorRead();
+//       if(avg != -1)
+//       {
+//           pid();
+//           analogWrite(rightMotor_power , rmSpeed);
+//           analogWrite(leftMotor_power , lmSpeed);
+//       }
+//     }
       
-//      sensing(); 
-//      pid();
-//      analogWrite(rightMotor_power , rmSpeed);
-//      analogWrite(leftMotor_power , lmSpeed);
+// //      sensorRead(); 
+// //      pid();
+// //      analogWrite(rightMotor_power , rmSpeed);
+// //      analogWrite(leftMotor_power , lmSpeed);
       
-  }
-  else if(prev_error < 2 && prev_error > -2 && leftFlag == 1 && count < 6)
-  {
-    forward();
-    timer = millis();
-    while ((millis() - timer) < 3000)
-    {
-      sensing();
-      if(count == 6 || count == 0) break;
-      rightFlag = 0;
-      leftFlag = 0;
-    }
-    if(count == 0)
-    {
-      leftSharp();
-    }    
-    while ((millis() - timer) < 1000)
-    {
-      sensing();
-      if(avg != -1)
-    {
-          pid();
-          analogWrite(rightMotor_power , rmSpeed);
-          analogWrite(leftMotor_power , lmSpeed);
-      }
-    }
+//   }
+//   else if(prev_error < 2 && prev_error > -2 && leftFlag == 1 && count < 6)
+//   {
+//     forward();
+//     timer = millis();
+//     while ((millis() - timer) < 3000)
+//     {
+//       sensorRead();
+//       if(count == 6 || count == 0) break;
+//       rightFlag = 0;
+//       leftFlag = 0;
+//     }
+//     if(count == 0)
+//     {
+//       leftSharp();
+//     }    
+//     while ((millis() - timer) < 1000)
+//     {
+//       sensorRead();
+//       if(avg != -1)
+//     {
+//           pid();
+//           analogWrite(rightMotor_power , rmSpeed);
+//           analogWrite(leftMotor_power , lmSpeed);
+//       }
+//     }
 
-//    sensing();
-//    pid();
-//    analogWrite(rightMotor_power , rmSpeed);
-//    analogWrite(leftMotor_power , lmSpeed); 
-}
-  if(count == 6)
-  {
-    forward();
-    allFlag++;
-    if(allFlag > 100) // stop condition
-    {
-      backward();
-      delay(20);
-      halt();
-      delay(5000);
-    }
-  }
-  else if(count < 6) allFlag = 0;
+// //    sensorRead();
+// //    pid();
+// //    analogWrite(rightMotor_power , rmSpeed);
+// //    analogWrite(leftMotor_power , lmSpeed); 
+// }
+//   if(count == 6)
+//   {
+//     forward();
+//     allFlag++;
+//     if(allFlag > 100) // stop condition
+//     {
+//       backward();
+//       delay(20);
+//       halt();
+//       delay(5000);
+//     }
+//   }
+//   else if(count < 6) allFlag = 0;
 
-//  //Serial.println(avg);
+// //  //Serial.println(avg);
   if(avg != -1)
   {
       pid();
-      analogWrite(rightMotor_power , rmSpeed);
-      analogWrite(leftMotor_power , lmSpeed);
-//      Serial.print(lmSpeed);
-//      Serial.print('\t');
-//      Serial.println(rmSpeed);
-  }
-  
-//ajairaSensor();
-
+      analogWrite(rightMotor_power, rmSpeed);
+      analogWrite(leftMotor_power, lmSpeed);
+      Serial.print('\n');
+      Serial.print(lmSpeed);
+      Serial.print('\t');
+      Serial.print(rmSpeed);
+      Serial.print('\n');
+  }  
 }
